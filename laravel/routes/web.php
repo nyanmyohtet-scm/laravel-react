@@ -13,6 +13,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+/** Return ReactJS SPA */
+Route::view('/{path?}', 'index');
+
