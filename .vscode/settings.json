@@ -1,0 +1,6 @@
+{
+    "files.eol": "\r\n",
+    "files.trimTrailingWhitespace": true,
+    "editor.formatOnSaveMode": "file",
+    "editor.formatOnSave": true,
+}

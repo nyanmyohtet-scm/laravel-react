@@ -14,5 +14,4 @@ use Illuminate\Support\Facades\Route;
 */
 
 /** Return ReactJS SPA */
-Route::view('/{path?}', 'index');
-
+Route::view('/{path?}', 'index')->where('path', '.*');

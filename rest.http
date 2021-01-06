@@ -1,0 +1,7 @@
+http://localhost:8000/api/auth/login
+content-type: application/json
+
+{
+    "email": "admin@example.com",
+    "password": "admin"
+}
