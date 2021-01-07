@@ -1,8 +1,10 @@
 import React, { Component } from "react";
-import API from "../../api/api";
-import { Button, Form } from "react-bootstrap";
 import { connect } from "react-redux";
 import { Redirect } from "react-router-dom";
+import { Formik, Field, Form, ErrorMessage } from "formik";
+import * as Yup from "yup";
+import Error from "../../components/Error";
+import API from "../../api/api";
 import {
     REGISTER_SUCCESS,
     REGISTER_FAIL,
@@ -16,138 +18,116 @@ class Login extends Component {
     constructor(props) {
         super(props);
 
-        this._isMounted = false;
-
         this.state = {
-            email: "",
-            password: "",
-            validated: false
+            errors: []
         };
-        this.handleEmail = this.handleEmail.bind(this);
-        this.handlePassword = this.handlePassword.bind(this);
+
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
-    handleEmail(event) {
-        this.setState({ email: event.target.value });
-    }
-
-    handlePassword(event) {
-        this.setState({ password: event.target.value });
-    }
-
-    handleSubmit(event) {
-        event.preventDefault();
-
+    handleSubmit({ email, password }) {
         const { dispatch } = this.props;
+        const data = { email, password };
 
-        const form = event.currentTarget;
-        if (form.checkValidity() !== false) {
-            const data = {
-                email: this.state.email,
-                password: this.state.password
-            };
-            API.post("auth/login", data)
-                .then(res => {
-                    console.log(res);
-                    const { data } = res;
-                    const { token } = data.success;
-                    const { user } = data;
+        API.post("auth/login", data)
+            .then(res => {
+                const { data } = res;
+                const { token } = data.success;
+                const { user } = data;
 
-                    /** store logged in user's info to local storage */
-                    localStorage.setItem(
-                        "user",
-                        JSON.stringify({
+                /** store logged in user's info to local storage */
+                localStorage.setItem(
+                    "user",
+                    JSON.stringify({
+                        accessToken: token,
+                        ...user
+                    })
+                );
+
+                /** store logged in user's info to App State */
+                dispatch({
+                    type: LOGIN_SUCCESS,
+                    payload: {
+                        user: {
                             accessToken: token,
                             ...user
-                        })
-                    );
-
-                    /** store logged in user's info to App State */
-                    dispatch({
-                        type: LOGIN_SUCCESS,
-                        payload: {
-                            user: {
-                                accessToken: token,
-                                ...user
-                            }
                         }
-                    });
-                })
-                .then(() => this.props.history.push("/"));
-        }
-
-        if (this._isMounted) {
-            this.setState({ validated: true });
-        }
-    }
-
-    componentDidMount() {
-        this._isMounted = true;
-    }
-
-    componentWillUnmount() {
-        this._isMounted = false;
+                    }
+                });
+            })
+            .then(() => this.props.history.push("/"))
+            .catch(error => {
+                if (error.response) {
+                    console.error(error.response.data);
+                    if (error.response.status == 401) {
+                        this.setState({
+                            errors: error.response.data.errors
+                        });
+                    }
+                }
+            });
     }
 
     render() {
-        const { isLoggedIn, message } = this.props;
-
-        if (isLoggedIn) {
+        if (this.props.isLoggedIn) {
             return <Redirect to="/" />;
         }
 
         return (
-            <div className="container">
+            <div className="form-container">
                 <h1>Login Form</h1>
-                <Form
-                    noValidate
-                    validated={this.state.validated}
-                    onSubmit={this.handleSubmit}
+                <div className="mb-3">
+                    <Error errors={this.state.errors} />
+                </div>
+                <Formik
+                    initialValues={{ email: "", password: "" }}
+                    validationSchema={Yup.object({
+                        email: Yup.string()
+                            .email("Invalid email address")
+                            .required("Required"),
+                        password: Yup.string().required("Required")
+                    })}
+                    onSubmit={values => {
+                        this.handleSubmit(values);
+                    }}
                 >
-                    <Form.Group controlId="formBasicEmail">
-                        <Form.Label>Email address</Form.Label>
-                        <Form.Control
-                            required
-                            type="email"
-                            placeholder="Enter email"
-                            onChange={this.handleEmail}
-                        />
-                        <Form.Control.Feedback type="invalid">
-                            Please enter a valid email address.
-                        </Form.Control.Feedback>
-                    </Form.Group>
-                    <Form.Group controlId="formBasicPassword">
-                        <Form.Label>Password</Form.Label>
-                        <Form.Control
-                            required
-                            type="password"
-                            placeholder="Password"
-                            onChange={this.handlePassword}
-                        />
-                        <Form.Control.Feedback type="invalid">
-                            Please enter a valid password.
-                        </Form.Control.Feedback>
-                    </Form.Group>
-                    <Form.Group controlId="formBasicCheckbox">
-                        <Form.Check type="checkbox" label="Remember Me" />
-                    </Form.Group>
-                    <Button variant="primary" type="submit">
-                        Login
-                    </Button>
-                </Form>
+                    <Form>
+                        <div className="mb-3">
+                            <label htmlFor="email" className="form-label">
+                                Email
+                            </label>
+                            <Field
+                                name="email"
+                                type="email"
+                                className="form-control"
+                            />
+                            <div className="txt-error">
+                                <ErrorMessage name="email" />
+                            </div>
+                        </div>
+                        <div className="mb-3">
+                            <label htmlFor="password" className="form-label">
+                                Password
+                            </label>
+                            <Field
+                                name="password"
+                                type="password"
+                                className="form-control"
+                            />
+                            <div className="txt-error">
+                                <ErrorMessage name="password" />
+                            </div>
+                        </div>
+                        <button type="submit" className="btn btn-primary">
+                            Login
+                        </button>
+                    </Form>
+                </Formik>
             </div>
         );
     }
 }
 
-function mapStateToProps(state) {
-    const { isLoggedIn } = state.auth;
-    const { message } = state.message;
-    return {
-        isLoggedIn,
-        message
-    };
-}
+const mapStateToProps = state => ({ isLoggedIn: state.auth.isLoggedIn });
 
 export default connect(mapStateToProps)(Login);

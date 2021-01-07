@@ -30,7 +30,7 @@ class AuthController extends Controller
                 'user' => $user,
             ], $this->successStatus);
         } else {
-            return response()->json(['error' => 'Unauthorised'], 401);
+            return response()->json(['errors' => ['Email or password is wrong.']], 401);
         }
     }
 
