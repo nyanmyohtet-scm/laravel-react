@@ -1,9 +1,7 @@
-// FIXME: specific input validations
-// TODO: add Profile File Upload
 import React, { Component, Fragment } from "react";
 import API from "../../api/api";
 import authHeader from "../../services/auth-header.service";
-import { Button, Form } from "react-bootstrap";
+import UserCreateForm from "../../components/UserCreateForm";
 
 export default class CreateUser extends Component {
     constructor(props) {
@@ -49,54 +47,49 @@ export default class CreateUser extends Component {
         this.setState({ [name]: value });
     }
 
-    handleSubmit(event) {
-        event.preventDefault();
+    handleSubmit(values) {
         console.log("create user form submit...");
 
         const formData = new FormData();
-        formData.append("name", this.state.name);
-        formData.append("email", this.state.email);
-        formData.append("password", this.state.password);
-        formData.append("c_password", this.state.cPassword);
-        formData.append("type", this.state.type);
-        formData.append("phone", this.state.phone);
-        formData.append("birth_date", this.state.dateOfBirth);
-        formData.append("address", this.state.address);
+        formData.append("name", values.name);
+        formData.append("email", values.email);
+        formData.append("password", values.password);
+        formData.append("c_password", values.cPassword);
+        formData.append("type", values.type);
+        formData.append("phone", values.phone);
+        formData.append("birth_date", values.dateOfBirth);
+        formData.append("address", values.address);
         formData.append("image", this.state.selectedFile);
 
-        const form = event.currentTarget;
-        console.log("form.checkValidity() : ", form.checkValidity());
-        if (form.checkValidity() !== false) {
-            API.post("users", formData, {
-                headers: {
-                    ...authHeader(),
-                    "Content-Type": "multipart/form-data"
-                }
+        API.post("users", formData, {
+            headers: {
+                ...authHeader(),
+                "Content-Type": "multipart/form-data"
+            }
+        })
+            .then(() => {
+                this.props.history.push("/user");
             })
-                .then(() => {
-                    this.props.history.push("/user");
-                })
-                .catch(error => {
-                    if (error.response) {
-                        // The request was made and the server responded with a status code
-                        // that falls out of the range of 2xx
-                        console.log(error.response.data);
-                        this.setState({ errors: error.response.data.errors });
-                        console.log(error.response.status);
-                        console.log(error.response.headers);
-                    } else if (error.request) {
-                        // The request was made but no response was received
-                        // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-                        // http.ClientRequest in node.js
-                        console.log(error.request);
-                    } else {
-                        // Something happened in setting up the request that triggered an Error
-                        console.log("Error", error.message);
-                    }
-                });
-        }
-
-        this.setState({ validated: true });
+            .catch(error => {
+                if (error.response) {
+                    // The request was made and the server responded with a status code
+                    // that falls out of the range of 2xx
+                    console.log(error.response.data);
+                    this.setState({
+                        errors: error.response.data.errors
+                    });
+                    console.log(error.response.status);
+                    console.log(error.response.headers);
+                } else if (error.request) {
+                    // The request was made but no response was received
+                    // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+                    // http.ClientRequest in node.js
+                    console.log(error.request);
+                } else {
+                    // Something happened in setting up the request that triggered an Error
+                    console.log("Error", error.message);
+                }
+            });
     }
 
     handleReset(e) {
@@ -170,136 +163,10 @@ export default class CreateUser extends Component {
         return (
             <Fragment>
                 <h2>Create User</h2>
-                <Form
-                    noValidate
-                    validated={this.state.validated}
-                    onSubmit={this.handleSubmit}
-                    onReset={this.handleReset}
-                >
-                    <Form.Group controlId="name">
-                        <Form.Label>Name</Form.Label>
-                        <Form.Control
-                            type="text"
-                            name="name"
-                            value={name}
-                            onChange={this.handleAllInputs}
-                            required
-                        ></Form.Control>
-                        <Form.Control.Feedback type="invalid">
-                            Please enter a valid user name.
-                        </Form.Control.Feedback>
-                        {this.state.errors.name && (
-                            <div className="invalid-feedback">
-                                {this.state.errors.name}
-                            </div>
-                        )}
-                    </Form.Group>
-                    <Form.Group controlId="email">
-                        <Form.Label>Email</Form.Label>
-                        <Form.Control
-                            type="email"
-                            name="email"
-                            value={email}
-                            onChange={this.handleAllInputs}
-                            required
-                        ></Form.Control>
-                        <Form.Control.Feedback type="invalid">
-                            Please enter a valid email address.
-                        </Form.Control.Feedback>
-                    </Form.Group>
-                    <Form.Group controlId="password">
-                        <Form.Label>Password</Form.Label>
-                        <Form.Control
-                            type="password"
-                            name="password"
-                            value={password}
-                            onChange={this.handleAllInputs}
-                            required
-                        ></Form.Control>
-                        <Form.Control.Feedback type="invalid">
-                            Please enter a valid password.
-                        </Form.Control.Feedback>
-                    </Form.Group>
-                    <Form.Group controlId="confirmPassword">
-                        <Form.Label>Confirm Password</Form.Label>
-                        <Form.Control
-                            type="password"
-                            name="cPassword"
-                            value={cPassword}
-                            onChange={this.handleAllInputs}
-                            required
-                        ></Form.Control>
-                        <Form.Control.Feedback type="invalid">
-                            Please enter a valid confirm password.
-                        </Form.Control.Feedback>
-                    </Form.Group>
-                    <Form.Group controlId="userType">
-                        <Form.Label>Type</Form.Label>
-                        <Form.Control
-                            as="select"
-                            name="type"
-                            value={type}
-                            onChange={this.handleAllInputs}
-                        >
-                            <option value="0">Admin</option>
-                            <option value="1">User</option>
-                        </Form.Control>
-                    </Form.Group>
-                    <Form.Group controlId="phone">
-                        <Form.Label>Phone</Form.Label>
-                        <Form.Control
-                            type="text"
-                            name="phone"
-                            value={phone}
-                            onChange={this.handleAllInputs}
-                            required
-                        ></Form.Control>
-                        <Form.Control.Feedback type="invalid">
-                            Please enter a valid phone number.
-                        </Form.Control.Feedback>
-                    </Form.Group>
-                    <Form.Group controlId="dateOfBirth">
-                        <Form.Label>Date of Birth</Form.Label>
-                        <Form.Control
-                            type="date"
-                            name="dateOfBirth"
-                            value={dateOfBirth}
-                            onChange={this.handleAllInputs}
-                            required
-                        ></Form.Control>
-                        <Form.Control.Feedback type="invalid">
-                            Please enter select a valid date of birth.
-                        </Form.Control.Feedback>
-                    </Form.Group>
-                    <Form.Group controlId="address">
-                        <Form.Label>Address</Form.Label>
-                        <Form.Control
-                            as="textarea"
-                            rows={3}
-                            name="address"
-                            value={address}
-                            onChange={this.handleAllInputs}
-                            required
-                        ></Form.Control>
-                        <Form.Control.Feedback type="invalid">
-                            Please enter a valid address.
-                        </Form.Control.Feedback>
-                    </Form.Group>
-                    <Form.Group>
-                        <Form.Label>Profile</Form.Label>
-                        <input
-                            type="file"
-                            name="profile"
-                            onChange={this.handleProfile}
-                        />
-                    </Form.Group>
-                    <Button className="mr-2" variant="primary" type="submit">
-                        Create
-                    </Button>
-                    <Button variant="secondary" type="reset">
-                        Clear
-                    </Button>
-                </Form>
+                <UserCreateForm
+                    handleSubmit={this.handleSubmit}
+                    handleProfile={this.handleProfile}
+                />
             </Fragment>
         );
     }
