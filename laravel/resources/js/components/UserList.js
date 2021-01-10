@@ -1,6 +1,7 @@
 import React, { Component, Fragment } from "react";
 import { Link } from "react-router-dom";
-import { Button, Col, Form, Modal, Pagination, Table } from "react-bootstrap";
+import { Button, Col, Form, Table } from "react-bootstrap";
+import Loading from "./Loading";
 import PaginationBar from "./PaginationBar";
 import API from "../api/api";
 import authHeader from "../services/auth-header.service";
@@ -190,7 +191,7 @@ class UserList extends Component {
                         {loading ? (
                             <tr>
                                 <td colSpan="9" className="text-center">
-                                    Loading...
+                                    <Loading />
                                 </td>
                             </tr>
                         ) : this.state.userList.length == 0 ? (

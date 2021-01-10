@@ -29,27 +29,27 @@ class UserController extends Controller
     {
         $userList = User::query();
 
-        if ($request->has('name')) {
+        if ($request->filled('name')) {
             $userList = $userList->withName($request->input('name'));
         }
 
-        if ($request->has('email')) {
+        if ($request->filled('email')) {
             $userList = $userList->withName($request->input('email'));
         }
 
-        if ($request->has('created_from')) {
-            info('has created from');
+        if ($request->filled('created_from')) {
             $from_date = date('Y-m-d', strtotime($request->input('created_from')));
             $userList = $userList->withCreatedFrom($from_date);
         }
 
-        if ($request->has('created_to')) {
-            info('has created to');
+        if ($request->filled('created_to')) {
             $to_date = date('Y-m-d', strtotime($request->input('created_to')));
             $userList = $userList->withCreatedTo($to_date);
         }
 
-        $userList = $userList->get();
+        $userList = $userList
+            ->with('createdUser')
+            ->get();
 
         return response()->json(['user_list' => $userList]);
     }
@@ -131,18 +131,12 @@ class UserController extends Controller
 
             // Encode contents to Base64
             $b64 = 'data:image/jpg;base64,' . base64_encode($bin);
-
-            info($b64);
         }
 
         return response()->json([
             'user' => $user,
             'profile_image' => $b64,
         ]);
-    }
-
-    public function profilePicture()
-    {
     }
 
     /**
