@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from "react";
+import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import Loading from "../../components/Loading";
 import API from "../../api/api";
@@ -22,15 +22,11 @@ export default class Profile extends Component {
         }
         API.get("users/" + this.id, { headers: authHeader() })
             .then(res => {
-                console.log(res);
                 if (this._isMounted) {
-                    this.setState(
-                        {
-                            user: res.data.user,
-                            profile_image: res.data.profile_image
-                        },
-                        () => console.log(this.state.user)
-                    );
+                    this.setState({
+                        user: res.data.user,
+                        profile_image: res.data.profile_image
+                    });
                 }
             })
             .then(() => {
@@ -67,7 +63,7 @@ export default class Profile extends Component {
         const profile_image = this.state.profile_image;
 
         return (
-            <Fragment>
+            <div className="sub-container">
                 <div className="row">
                     <div className="col d-md-flex justify-content-between">
                         <div>
@@ -77,14 +73,13 @@ export default class Profile extends Component {
                             <Link to={`/user/edit/${id}`}>Edit</Link>
                         </div>
                     </div>
-                    <div className="col-md-8"></div>
                 </div>
                 <div className="row">
-                    <div className="col-md-2">Name</div>
+                    <div className="col-md-4">Name</div>
                     <div>{name}</div>
                 </div>
                 <div className="row">
-                    <div className="col-md-2"></div>
+                    <div className="col-md-4"></div>
                     <div>
                         <img
                             className="profile-image"
@@ -94,26 +89,26 @@ export default class Profile extends Component {
                     </div>
                 </div>
                 <div className="row">
-                    <div className="col-md-2">Email</div>
+                    <div className="col-md-4">Email</div>
                     <div>{email}</div>
                 </div>
                 <div className="row">
-                    <div className="col-md-2">Type</div>
+                    <div className="col-md-4">Type</div>
                     <div>{type == 0 ? "Admin" : "User"}</div>
                 </div>
                 <div className="row">
-                    <div className="col-md-2">Phone</div>
+                    <div className="col-md-4">Phone</div>
                     <div>{phone}</div>
                 </div>
                 <div className="row">
-                    <div className="col-md-2">Date Of Birth</div>
+                    <div className="col-md-4">Date Of Birth</div>
                     <div>{dateOfBirth}</div>
                 </div>
                 <div className="row">
-                    <div className="col-md-2">Address</div>
+                    <div className="col-md-4">Address</div>
                     <div>{address}</div>
                 </div>
-            </Fragment>
+            </div>
         );
     }
 }

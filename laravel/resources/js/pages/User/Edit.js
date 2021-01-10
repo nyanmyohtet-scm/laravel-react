@@ -1,223 +1,158 @@
-// FIXME: redirect to user list
-// FIXME: specific input validations
-// TODO: add Profile File Upload
-import React, { Component, Fragment } from "react";
+import React, { Component } from "react";
 import API from "../../api/api";
 import authHeader from "../../services/auth-header.service";
-import { Button, Form } from "react-bootstrap";
+import Loading from "../../components/Loading";
+import UserForm from "../../components/UserForm";
 
 export default class Edit extends Component {
     constructor(props) {
         super(props);
 
+        this._isMounted = false;
+
         this.id = this.props.match.params.id;
 
         this.state = {
             loading: false,
-            validated: false,
-            name: "",
-            email: "",
-            type: 1,
-            phone: "",
-            dateOfBirth: "",
-            address: ""
+            initialValues: {
+                name: "",
+                email: "",
+                password: "",
+                cPassword: "",
+                type: 1,
+                phone: "",
+                dateOfBirth: "",
+                address: ""
+            },
+            selectedFile: null,
+            imagePreviewUrl: null
         };
 
-        this.handleAllInputs = this.handleAllInputs.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
-        // this.handleReset = this.handleReset.bind(this);
-
+        this.handleProfile = this.handleProfile.bind(this);
         this.fetchUser = this.fetchUser.bind(this);
-
-        this.fetchUser();
     }
 
     fetchUser() {
+        if (this._isMounted) {
+            this.setState({ loading: true });
+        }
         API.get("users/" + this.id, {
             headers: authHeader()
-        }).then(res => {
-            console.log(res);
-            const {
-                name,
-                email,
-                type,
-                phone,
-                birth_date: dateOfBirth,
-                address
-            } = res.data.user;
-            this.setState(
-                {
+        })
+            .then(res => {
+                console.log(res);
+                const {
                     name,
                     email,
                     type,
                     phone,
-                    dateOfBirth,
+                    birth_date: dateOfBirth,
                     address
-                },
-                () => console.log(this.state)
-            );
-        });
+                } = res.data.user;
+                if (this._isMounted) {
+                    this.setState({
+                        initialValues: {
+                            name,
+                            email,
+                            type,
+                            phone,
+                            dateOfBirth,
+                            address
+                        }
+                    });
+                }
+            })
+            .then(() => {
+                if (this._isMounted) this.setState({ loading: false });
+            });
     }
 
-    handleAllInputs(e) {
-        let { name, value } = e.target;
-        if (name === "type") {
-            value = parseInt(value);
-        }
+    handleProfile(event) {
+        this.setState(
+            {
+                selectedFile: event.target.files[0]
+            },
+            () => console.log(this.state.selectedFile)
+        );
 
-        if (name === "phone") {
-            const phoneNoPattern = /^\d{12}$/;
-            if (value.match(phoneNoPattern)) {
-                console.warn("valid phone no");
-            } else {
-                console.warn("invalid phone no format");
-            }
-        }
-        console.log(name, " : ", value);
-        this.setState({ [name]: value });
-    }
-
-    handleSubmit(event) {
-        event.preventDefault();
-        console.log("create user form submit...");
-        const data = {
-            id: this.id,
-            name: this.state.name,
-            email: this.state.email,
-            type: this.state.type,
-            phone: this.state.phone,
-            birth_date: this.state.dateOfBirth,
-            address: this.state.address
+        let reader = new FileReader();
+        let file = event.target.files[0];
+        reader.onloadend = () => {
+            this.setState({
+                imagePreviewUrl: reader.result
+            });
         };
-
-        const form = event.currentTarget;
-        console.log("form.checkValidity() : ", form.checkValidity());
-        if (form.checkValidity() !== false) {
-            API.put("users", data, { headers: authHeader() })
-                .then(res => {
-                    console.log(res);
-                })
-                .then(() => {
-                    console.log("redired to user list");
-                    this.props.history.push("/user");
-                });
-        }
-
-        this.setState({ validated: true });
+        reader.readAsDataURL(file);
     }
 
-    // handleReset(e) {
-    //     e.preventDefault();
-    //     this.setState({
-    //         name: "",
-    //         email: "",
-    //         password: "",
-    //         cPassword: "",
-    //         type: "",
-    //         phone: "",
-    //         dateOfBirth: "",
-    //         address: ""
-    //     });
-    // }
+    handleSubmit(values) {
+        const formData = new FormData();
+        formData.append("_method", "PUT");
+        formData.append("id", this.id);
+        formData.append("name", values.name);
+        formData.append("email", values.email);
+        formData.append("type", values.type);
+        formData.append("phone", values.phone);
+        formData.append("birth_date", values.dateOfBirth);
+        formData.append("address", values.address);
+        formData.append("image", this.state.selectedFile);
+
+        API.post("users", formData, {
+            headers: {
+                ...authHeader(),
+                "Content-Type": "multipart/form-data"
+            }
+        })
+            .then(() => {
+                this.props.history.push("/user");
+            })
+            .catch(error => {
+                if (error.response) {
+                    // The request was made and the server responded with a status code
+                    // that falls out of the range of 2xx
+                    console.log(error.response.data);
+                    console.log(error.response.status);
+                    console.log(error.response.headers);
+                } else if (error.request) {
+                    // The request was made but no response was received
+                    // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+                    // http.ClientRequest in node.js
+                    console.log(error.request);
+                } else {
+                    // Something happened in setting up the request that triggered an Error
+                    console.log("Error", error.message);
+                }
+            });
+    }
+
+    componentDidMount() {
+        this._isMounted = true;
+        this.fetchUser();
+    }
+
+    componentWillUnmount() {
+        this._isMounted = false;
+    }
 
     render() {
-        const { name, email, type, phone, dateOfBirth, address } = this.state;
+        const loading = this.state.loading;
+
+        if (loading) {
+            return <Loading />;
+        }
+
         return (
-            <Fragment>
+            <div className="sub-container">
                 <h2>Edit User</h2>
-                <Form
-                    noValidate
-                    validated={this.state.validated}
-                    onSubmit={this.handleSubmit}
-                    // onReset={this.handleReset}
-                >
-                    <Form.Group controlId="name">
-                        <Form.Label>Name</Form.Label>
-                        <Form.Control
-                            type="text"
-                            name="name"
-                            value={name}
-                            onChange={this.handleAllInputs}
-                            required
-                        ></Form.Control>
-                        <Form.Control.Feedback type="invalid">
-                            Please enter a valid user name.
-                        </Form.Control.Feedback>
-                    </Form.Group>
-                    <Form.Group controlId="email">
-                        <Form.Label>Email</Form.Label>
-                        <Form.Control
-                            type="email"
-                            name="email"
-                            value={email}
-                            onChange={this.handleAllInputs}
-                            required
-                        ></Form.Control>
-                        <Form.Control.Feedback type="invalid">
-                            Please enter a valid email address.
-                        </Form.Control.Feedback>
-                    </Form.Group>
-                    <Form.Group controlId="userType">
-                        <Form.Label>Type</Form.Label>
-                        <Form.Control
-                            as="select"
-                            name="type"
-                            value={type}
-                            onChange={this.handleAllInputs}
-                        >
-                            <option value="1">Admin</option>
-                            <option value="2">User</option>
-                            <option value="3">Visitor</option>
-                        </Form.Control>
-                    </Form.Group>
-                    <Form.Group controlId="phone">
-                        <Form.Label>Phone</Form.Label>
-                        <Form.Control
-                            type="text"
-                            name="phone"
-                            value={phone}
-                            onChange={this.handleAllInputs}
-                            required
-                        ></Form.Control>
-                        <Form.Control.Feedback type="invalid">
-                            Please enter a valid phone number.
-                        </Form.Control.Feedback>
-                    </Form.Group>
-                    <Form.Group controlId="dateOfBirth">
-                        <Form.Label>Date of Birth</Form.Label>
-                        <Form.Control
-                            type="date"
-                            name="dateOfBirth"
-                            value={dateOfBirth}
-                            onChange={this.handleAllInputs}
-                            required
-                        ></Form.Control>
-                        <Form.Control.Feedback type="invalid">
-                            Please enter select a valid date of birth.
-                        </Form.Control.Feedback>
-                    </Form.Group>
-                    <Form.Group controlId="address">
-                        <Form.Label>Address</Form.Label>
-                        <Form.Control
-                            as="textarea"
-                            rows={3}
-                            name="address"
-                            value={address}
-                            onChange={this.handleAllInputs}
-                            required
-                        ></Form.Control>
-                        <Form.Control.Feedback type="invalid">
-                            Please enter a valid address.
-                        </Form.Control.Feedback>
-                    </Form.Group>
-                    <Button variant="primary" type="submit">
-                        Update
-                    </Button>
-                    {/* <Button variant="secondary" type="reset">
-                        Clear
-                    </Button> */}
-                </Form>
-            </Fragment>
+                <UserForm
+                    formMode={"edit"}
+                    initialValues={this.state.initialValues}
+                    imagePreviewUrl={this.state.imagePreviewUrl}
+                    handleSubmit={this.handleSubmit}
+                    handleProfile={this.handleProfile}
+                />
+            </div>
         );
     }
 }

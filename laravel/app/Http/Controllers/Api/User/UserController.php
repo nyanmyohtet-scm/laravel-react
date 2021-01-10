@@ -63,13 +63,13 @@ class UserController extends Controller
     public function store(Request $request)
     {
         // Update
-        if ($request->isMethod('put')) {
+        if ($request->isMethod('PUT')) {
             $user = User::find($request['id']);
 
             $validated = $request->validate([
                 'name' => 'required|string|max:255',
                 'email' => 'required|string|max:255',
-                'type' => 'required|numeric|in:1,2,3',
+                'type' => 'required|numeric|in:0,1',
                 'phone' => 'required|string|max:12',
                 'birth_date' => 'required|string',
                 'address' => 'required|string|max:255',
@@ -80,7 +80,7 @@ class UserController extends Controller
                 'email' => 'required|string|max:255',
                 'password' => 'required|string|max:255',
                 'c_password' => 'required|string|max:255',
-                'type' => 'required|numeric|in:1,2,3',
+                'type' => 'required|numeric|in:0,1',
                 'phone' => 'required|string|max:12',
                 'birth_date' => 'required|string',
                 'address' => 'required|string|max:255',
