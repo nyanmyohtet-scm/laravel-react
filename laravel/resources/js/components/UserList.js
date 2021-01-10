@@ -1,4 +1,5 @@
 import React, { Component, Fragment } from "react";
+import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import { Button, Col, Form, Table } from "react-bootstrap";
 import Loading from "./Loading";
@@ -58,7 +59,6 @@ class UserList extends Component {
         const data = { name, email, created_from, created_to };
 
         API.post(url, data, { headers: authHeader() }).then(res => {
-            console.log(res);
             if (this._isMounted) {
                 this.setState(
                     {
@@ -72,10 +72,7 @@ class UserList extends Component {
                             next_page_url: res.data.next_page_url
                         }
                     },
-                    () => {
-                        this.setState({ loading: false });
-                        console.log(this.state.userList);
-                    }
+                    () => this.setState({ loading: false })
                 );
             }
         });
@@ -226,14 +223,19 @@ class UserList extends Component {
                                         <td>{created_at}</td>
                                         <td>{updated_at}</td>
                                         <td>
-                                            <a
-                                                href="#"
-                                                onClick={event =>
-                                                    this.handleDelete(id, event)
-                                                }
-                                            >
-                                                Delete
-                                            </a>
+                                            {id != this.props.authUser.id && (
+                                                <a
+                                                    href="#"
+                                                    onClick={event =>
+                                                        this.handleDelete(
+                                                            id,
+                                                            event
+                                                        )
+                                                    }
+                                                >
+                                                    Delete
+                                                </a>
+                                            )}
                                         </td>
                                     </tr>
                                 )
@@ -253,4 +255,6 @@ class UserList extends Component {
     }
 }
 
-export default UserList;
+const mapStateToProps = state => ({ authUser: state.auth.user });
+
+export default connect(mapStateToProps)(UserList);
