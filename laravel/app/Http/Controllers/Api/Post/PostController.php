@@ -5,9 +5,25 @@ namespace App\Http\Controllers\Api\Post;
 use App\Http\Controllers\Controller;
 use App\Models\Post;
 use Illuminate\Http\Request;
+use App\Contracts\Services\Post\PostServiceInterface;
 
 class PostController extends Controller
 {
+    /**
+     * Post Service
+     */
+    private $postService;
+
+    /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct(PostServiceInterface $postService)
+    {
+        $this->postService = $postService;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -16,6 +32,44 @@ class PostController extends Controller
     public function index()
     {
         return Post::paginate(4);
+    }
+
+    public function uploadCSV(Request $request)
+    {
+        $validated = $request->validate([
+            'csv_file' => 'required|file'
+        ]);
+
+        $path =  $validated['csv_file']->getRealPath();
+        $csvData = array_map('str_getcsv', file($path));
+
+        $headerRow = $csvData[0];
+
+        if ($headerRow != ['title', 'description']) {
+            return response()->json(
+                [
+                    'errors' => [
+                        'csv_file' => ["Header row must included only 'title' and 'description'."]
+                    ]
+                ], 422);
+        }
+
+        $dataRowList = array_slice($csvData, 1);
+
+        if (count($dataRowList) == 0) {
+            return response()->json(
+                [
+                    'errors' => ['csv_file' => ['Empty CSV file.']
+                ]
+            ], 422);
+        }
+
+        $createdPostList = $this->postService->uploadCSV($dataRowList);
+
+        return response()->json([
+            'success' => true,
+            'createdPostList' => $createdPostList
+        ]);
     }
 
     /**

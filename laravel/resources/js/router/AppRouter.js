@@ -9,12 +9,14 @@ import Profile from "../pages/User/Profile";
 import CreateUser from "../pages/User/CreateUser";
 import EditUser from "../pages/User/Edit";
 import Post from "../pages/Post/Post";
+import PostUploadCSV from "../pages/Post/UploadCSV";
 
 const AppRouter = () => (
     <Router>
         <Switch>
             <PublicRoute path="/" component={HomePage} exact />
             <PublicRoute path="/login" component={Login} />
+            <PublicRoute path="/post/upload-csv" component={PostUploadCSV} />
             <PublicRoute path="/post" component={Post} />
             {/* TODO: setup admin routes */}
             <PrivateRoute path="/user/create" component={CreateUser} />

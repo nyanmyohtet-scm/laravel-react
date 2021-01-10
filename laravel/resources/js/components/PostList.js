@@ -1,4 +1,5 @@
 import React, { Component, Fragment } from "react";
+import { Link } from "react-router-dom";
 import { Button, Col, Form, Modal, Pagination, Table } from "react-bootstrap";
 import PaginationBar from "./PaginationBar";
 import API from "../api/api";
@@ -112,7 +113,12 @@ class PostList extends Component {
                         </Form>
                     </div>
                     <Button className="col-md-2">Add</Button>
-                    <Button className="col-md-2">Upload</Button>
+                    <Link
+                        to="/post/upload-csv"
+                        className="col-md-2 btn btn-primary"
+                    >
+                        Upload
+                    </Link>
                     <Button
                         className="col-md-2"
                         onClick={this.handleDownloadCSV}
