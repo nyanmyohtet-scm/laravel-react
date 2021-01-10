@@ -17,4 +17,12 @@ class Post extends Model
     protected $casts = [
         'created_at' => 'datetime:Y-m-d',
     ];
+
+    /**
+     * Get the user who created the post.
+     */
+    public function createdUser()
+    {
+        return $this->belongsTo(User::class, 'created_user_id');
+    }
 }

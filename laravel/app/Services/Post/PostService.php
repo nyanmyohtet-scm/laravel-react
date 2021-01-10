@@ -23,6 +23,16 @@ class PostService implements PostServiceInterface
     }
 
     /**
+     * Get Post List.
+     *
+     * @return Array
+     */
+    public function getList()
+    {
+        return $this->postDao->index();
+    }
+
+    /**
      * Handle CSV Upload
      *
      * @param $csvFile

@@ -31,7 +31,7 @@ class PostController extends Controller
      */
     public function index()
     {
-        return Post::paginate(4);
+        return $this->postService->getList();
     }
 
     public function uploadCSV(Request $request)

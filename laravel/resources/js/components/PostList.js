@@ -48,7 +48,6 @@ class PostList extends Component {
     fetchPostList(url = "posts") {
         this.setState({ loading: true });
         API.get(url, { headers: authHeader() }).then(res => {
-            console.log(res);
             if (this._isMounted) {
                 this.setState(
                     {
@@ -64,7 +63,6 @@ class PostList extends Component {
                     },
                     () => {
                         this.setState({ loading: false });
-                        console.log(this.state.postList);
                     }
                 );
             }
@@ -168,7 +166,7 @@ class PostList extends Component {
                                     {
                                         title,
                                         description,
-                                        created_user_id,
+                                        created_user,
                                         created_at
                                     },
                                     index
@@ -189,7 +187,7 @@ class PostList extends Component {
                                             </a>
                                         </td>
                                         <td>{description}</td>
-                                        <td>{created_user_id}</td>
+                                        <td>{created_user.name}</td>
                                         <td>{created_at}</td>
                                         <td>Edit</td>
                                         <td>Delete</td>
