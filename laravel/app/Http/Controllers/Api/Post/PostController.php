@@ -29,29 +29,15 @@ class PostController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function list(Request $request)
     {
-        return $this->postService->getList();
-    }
-
-    /**
-     * Search a listing of the post by search params.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function search(Request $request)
-    {
-        $postList = Post::query();
+        $param = [];
 
         if ($request->filled('title')) {
-            $postList = $postList->withTitle($request->input('title'));
+            $param['title'] = $request->input('title');
         }
 
-        $postList = $postList
-            ->with('createdUser')
-            ->get();
-
-        return response()->json(['post_list' => $postList]);
+        return $this->postService->getList($param);
     }
 
     public function uploadCSV(Request $request)
@@ -71,7 +57,9 @@ class PostController extends Controller
                     'errors' => [
                         'csv_file' => ["Header row must included only 'title' and 'description'."]
                     ]
-                ], 422);
+                ],
+                422
+            );
         }
 
         $dataRowList = array_slice($csvData, 1);
@@ -79,9 +67,12 @@ class PostController extends Controller
         if (count($dataRowList) == 0) {
             return response()->json(
                 [
-                    'errors' => ['csv_file' => ['Empty CSV file.']
-                ]
-            ], 422);
+                    'errors' => [
+                        'csv_file' => ['Empty CSV file.']
+                    ]
+                ],
+                422
+            );
         }
 
         $createdPostList = $this->postService->uploadCSV($dataRowList);

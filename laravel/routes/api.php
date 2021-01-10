@@ -62,10 +62,7 @@ Route::group(['middleware' => 'auth:api'], function () {
 });
 
 // Get Post List
-Route::get('posts', 'Api\Post\PostController@index')->name('posts.index');
-
-// Search Post
-Route::post('posts/search', 'Api\Post\PostController@search')->name('posts.search');
+Route::post('posts/list', 'Api\Post\PostController@list')->name('posts.list');
 
 // Download Post List CSV
 Route::get('posts/export-csv', 'Api\Post\PostController@exportCSV')->name('posts.export_csv');

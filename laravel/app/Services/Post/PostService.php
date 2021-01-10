@@ -27,9 +27,9 @@ class PostService implements PostServiceInterface
      *
      * @return Array
      */
-    public function getList()
+    public function getList($param)
     {
-        return $this->postDao->index();
+        return $this->postDao->list($param);
     }
 
     /**

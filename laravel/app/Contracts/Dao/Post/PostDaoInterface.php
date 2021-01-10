@@ -4,6 +4,6 @@ namespace App\Contracts\Dao\Post;
 
 interface PostDaoInterface
 {
-    public function index();
+    public function list($param);
     public function create($param);
 }

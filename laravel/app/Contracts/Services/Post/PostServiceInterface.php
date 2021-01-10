@@ -8,6 +8,6 @@ namespace App\Contracts\Services\Post;
 
 interface PostServiceInterface
 {
-    public function getList();
+    public function getList($param);
     public function uploadCSV($dataRowList);
 }

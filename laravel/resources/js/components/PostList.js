@@ -10,6 +10,7 @@ class PostList extends Component {
         super(props);
 
         this._isMounted = false;
+        this.BASE_API_ROUTE = "posts/list";
 
         this.state = {
             loading: false,
@@ -46,16 +47,7 @@ class PostList extends Component {
 
     handleSearch(event) {
         event.preventDefault();
-
-        this.setState({ loading: true });
-        const { title } = this.state;
-        const data = { title };
-
-        API.post("posts/search", data, { headers: authHeader() }).then(res => {
-            this.setState({ postList: res.data.post_list }, () =>
-                this.setState({ loading: false })
-            );
-        });
+        this.fetchPostList();
     }
 
     handlePostTitle(title, description, event) {
@@ -69,9 +61,11 @@ class PostList extends Component {
         this.setState({ showModal: false, postDetailModal });
     }
 
-    fetchPostList(url = "posts") {
+    fetchPostList(url = this.BASE_API_ROUTE) {
         this.setState({ loading: true });
-        API.get(url, { headers: authHeader() }).then(res => {
+        const { title } = this.state;
+        const data = { title };
+        API.post(url, data, { headers: authHeader() }).then(res => {
             if (this._isMounted) {
                 this.setState(
                     {
@@ -176,7 +170,15 @@ class PostList extends Component {
                     <thead>
                         <tr>
                             {TABLE_HEADER_LIST.map((header, index) => (
-                                <th key={index}>{header}</th>
+                                <th
+                                    key={index}
+                                    className={
+                                        header.replace(" ", "-").toLowerCase() +
+                                        "-col"
+                                    }
+                                >
+                                    {header}
+                                </th>
                             ))}
                         </tr>
                     </thead>
@@ -232,7 +234,7 @@ class PostList extends Component {
                 </Table>
                 <div className="d-flex justify-content-center">
                     <PaginationBar
-                        BASE_API_ROUTE={"posts"}
+                        BASE_API_ROUTE={this.BASE_API_ROUTE}
                         pagination={pagination}
                         fetchUserList={this.fetchPostList}
                     />

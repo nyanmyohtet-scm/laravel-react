@@ -12,9 +12,17 @@ class PostDao implements PostDaoInterface
      *
      * @return Illuminate\Database\Eloquent\Model $post
      */
-    public function index() {
-        return Post::with('createdUser')
-            ->paginate(20);
+    public function list($param)
+    {
+        $postList = Post::query();
+
+        if (array_key_exists('title', $param)) {
+            $postList = $postList->withTitle($param['title']);
+        }
+
+        return $postList
+            ->with('createdUser')
+            ->paginate(10);
     }
 
     /**
@@ -23,7 +31,8 @@ class PostDao implements PostDaoInterface
      * @param  Array  $param
      * @return Illuminate\Database\Eloquent\Model $post
      */
-    public function create($param) {
+    public function create($param)
+    {
         $post = new Post();
         $post['title'] = $param['title'];
         $post['description'] = $param['description'];
@@ -33,4 +42,3 @@ class PostDao implements PostDaoInterface
         return $post;
     }
 }
-
