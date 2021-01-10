@@ -34,6 +34,26 @@ class PostController extends Controller
         return $this->postService->getList();
     }
 
+    /**
+     * Search a listing of the post by search params.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function search(Request $request)
+    {
+        $postList = Post::query();
+
+        if ($request->filled('title')) {
+            $postList = $postList->withTitle($request->input('title'));
+        }
+
+        $postList = $postList
+            ->with('createdUser')
+            ->get();
+
+        return response()->json(['post_list' => $postList]);
+    }
+
     public function uploadCSV(Request $request)
     {
         $validated = $request->validate([

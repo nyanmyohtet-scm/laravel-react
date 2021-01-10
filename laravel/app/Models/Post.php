@@ -25,4 +25,15 @@ class Post extends Model
     {
         return $this->belongsTo(User::class, 'created_user_id');
     }
+
+    /**
+     * Scope a query to only include posts by title.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeWithTitle($query, $title)
+    {
+        return $query->where('title', 'LIKE', "%{$title}%");
+    }
 }

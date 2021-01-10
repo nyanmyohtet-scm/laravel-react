@@ -14,6 +14,7 @@ class PostList extends Component {
         this.state = {
             loading: false,
             showModal: false,
+            title: "",
             postList: [],
             postDetailModal: {
                 title: "",
@@ -28,10 +29,33 @@ class PostList extends Component {
                 next_page_url: ""
             }
         };
+
+        this.handleAllSearchInputs = this.handleAllSearchInputs.bind(this);
+        this.handleSearch = this.handleSearch.bind(this);
         this.handlePostTitle = this.handlePostTitle.bind(this);
         this.handleClose = this.handleClose.bind(this);
         this.fetchPostList = this.fetchPostList.bind(this);
         this.handleDownloadCSV = this.handleDownloadCSV.bind(this);
+    }
+
+    handleAllSearchInputs(event) {
+        event.preventDefault();
+        let { name, value } = event.target;
+        this.setState({ [name]: value });
+    }
+
+    handleSearch(event) {
+        event.preventDefault();
+
+        this.setState({ loading: true });
+        const { title } = this.state;
+        const data = { title };
+
+        API.post("posts/search", data, { headers: authHeader() }).then(res => {
+            this.setState({ postList: res.data.post_list }, () =>
+                this.setState({ loading: false })
+            );
+        });
     }
 
     handlePostTitle(title, description, event) {
@@ -93,7 +117,7 @@ class PostList extends Component {
             "Action"
         ];
 
-        const { loading, pagination } = this.state;
+        const { loading, pagination, title } = this.state;
 
         return (
             <Fragment>
@@ -102,9 +126,18 @@ class PostList extends Component {
                         <Form>
                             <Form.Row>
                                 <Col md="8">
-                                    <Form.Control placeholder="Search Post" />
+                                    <Form.Control
+                                        name="title"
+                                        value={title}
+                                        placeholder="Title"
+                                        onChange={this.handleAllSearchInputs}
+                                    />
                                 </Col>
-                                <Button type="submit" className="col-md-4">
+                                <Button
+                                    type="submit"
+                                    className="col-md-4"
+                                    onClick={this.handleSearch}
+                                >
                                     Search
                                 </Button>
                             </Form.Row>
