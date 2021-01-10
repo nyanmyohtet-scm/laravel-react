@@ -9,6 +9,7 @@ import Profile from "../pages/User/Profile";
 import CreateUser from "../pages/User/CreateUser";
 import EditUser from "../pages/User/Edit";
 import Post from "../pages/Post/Post";
+import CreatePost from "../pages/Post/Create";
 import PostUploadCSV from "../pages/Post/UploadCSV";
 
 const AppRouter = () => (
@@ -16,6 +17,7 @@ const AppRouter = () => (
         <Switch>
             <PublicRoute path="/" component={HomePage} exact />
             <PublicRoute path="/login" component={Login} />
+            <PublicRoute path="/post/create" component={CreatePost} />
             <PublicRoute path="/post/upload-csv" component={PostUploadCSV} />
             <PublicRoute path="/post" component={Post} />
             {/* TODO: setup admin routes */}

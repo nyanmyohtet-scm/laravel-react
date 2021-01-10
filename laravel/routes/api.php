@@ -57,6 +57,9 @@ Route::group(['middleware' => 'auth:api'], function () {
     // Delete User
     Route::delete('users/{id}', 'Api\User\UserController@destroy')->name('users.destroy');
 
+    // Create New Post
+    Route::post('posts', 'Api\Post\PostController@store')->name('posts.store');
+
     // Upload Post CSV
     Route::post('posts/upload-csv', 'Api\Post\PostController@uploadCSV')->name('posts.upload_csv');
 });

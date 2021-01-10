@@ -140,7 +140,14 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required|string|max:255'
+        ]);
+
+        $createdPost = $this->postService->create($validated);
+
+        return response()->json(['created_post' => $createdPost]);
     }
 
     /**

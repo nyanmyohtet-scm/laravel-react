@@ -1,6 +1,7 @@
 import React, { Component, Fragment } from "react";
 import { Link } from "react-router-dom";
-import { Button, Col, Form, Modal, Pagination, Table } from "react-bootstrap";
+import { Button, Col, Form, Modal, Table } from "react-bootstrap";
+import Loading from "./Loading";
 import PaginationBar from "./PaginationBar";
 import API from "../api/api";
 import authHeader from "../services/auth-header.service";
@@ -137,7 +138,12 @@ class PostList extends Component {
                             </Form.Row>
                         </Form>
                     </div>
-                    <Button className="col-md-2">Add</Button>
+                    <Link
+                        to="/post/create"
+                        className="col-md-2 btn btn-primary"
+                    >
+                        Add
+                    </Link>
                     <Link
                         to="/post/upload-csv"
                         className="col-md-2 btn btn-primary"
@@ -166,7 +172,7 @@ class PostList extends Component {
                         </Modal.Body>
                     </Modal>
                 </div>
-                <Table striped bordered hover>
+                <Table striped bordered hover className="post-list-tbl">
                     <thead>
                         <tr>
                             {TABLE_HEADER_LIST.map((header, index) => (
@@ -186,7 +192,7 @@ class PostList extends Component {
                         {loading ? (
                             <tr>
                                 <td colSpan="9" className="text-center">
-                                    Loading...
+                                    <Loading />
                                 </td>
                             </tr>
                         ) : this.state.postList.length == 0 ? (

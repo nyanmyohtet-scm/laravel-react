@@ -33,6 +33,18 @@ class PostService implements PostServiceInterface
     }
 
     /**
+     * Create new post.
+     *
+     * @param Array $param
+     */
+    public function create($param)
+    {
+        $authUser = auth()->user();
+        $param['created_user_id'] = $authUser->id;
+        return $this->postDao->create($param);
+    }
+
+    /**
      * Handle CSV Upload
      *
      * @param $csvFile

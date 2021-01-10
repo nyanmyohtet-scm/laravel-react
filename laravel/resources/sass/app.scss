@@ -40,3 +40,12 @@ img.profile-image {
     min-width: 200px;
     border: 1px solid gray;
 }
+
+.post-list-tbl .posted-user-col,
+.post-list-tbl .posted-date-col {
+    width: 150px;
+}
+
+.post-list-tbl .action-col {
+    width: 70px;
+}
