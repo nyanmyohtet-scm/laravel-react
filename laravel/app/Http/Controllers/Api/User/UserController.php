@@ -14,18 +14,7 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
-    {
-        return User::with('createdUser')
-            ->paginate(5);
-    }
-
-    /**
-     * Search a listing of the user by search params.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function search(Request $request)
+    public function list(Request $request)
     {
         $userList = User::query();
 
@@ -47,11 +36,9 @@ class UserController extends Controller
             $userList = $userList->withCreatedTo($to_date);
         }
 
-        $userList = $userList
+        return $userList
             ->with('createdUser')
-            ->get();
-
-        return response()->json(['user_list' => $userList]);
+            ->paginate(5);
     }
 
     /**

@@ -11,6 +11,7 @@ class UserList extends Component {
         super(props);
 
         this._isMounted = false;
+        this.BASE_API_ROUTE = "users/list";
 
         this.state = {
             loading: false,
@@ -36,21 +37,7 @@ class UserList extends Component {
 
     handleSearch(event) {
         event.preventDefault();
-        this.setState({ loading: true });
-        const {
-            name,
-            email,
-            createdFrom: created_from,
-            createdTo: created_to
-        } = this.state;
-        const data = { name, email, created_from, created_to };
-
-        API.post("users/search", data, { headers: authHeader() }).then(res => {
-            console.log(res);
-            this.setState({ userList: res.data.user_list }, () =>
-                this.setState({ loading: false })
-            );
-        });
+        this.fetchUserList();
     }
 
     handleAllSearchInputs(event) {
@@ -59,9 +46,18 @@ class UserList extends Component {
         this.setState({ [name]: value });
     }
 
-    fetchUserList(url = "users") {
+    fetchUserList(url = this.BASE_API_ROUTE) {
         this.setState({ loading: true });
-        API.get(url, { headers: authHeader() }).then(res => {
+
+        const {
+            name,
+            email,
+            createdFrom: created_from,
+            createdTo: created_to
+        } = this.state;
+        const data = { name, email, created_from, created_to };
+
+        API.post(url, data, { headers: authHeader() }).then(res => {
             console.log(res);
             if (this._isMounted) {
                 this.setState(
@@ -247,7 +243,7 @@ class UserList extends Component {
                 </Table>
                 <div className="d-flex justify-content-center">
                     <PaginationBar
-                        BASE_API_ROUTE={"users"}
+                        BASE_API_ROUTE={this.BASE_API_ROUTE}
                         pagination={pagination}
                         fetchUserList={this.fetchUserList}
                     />

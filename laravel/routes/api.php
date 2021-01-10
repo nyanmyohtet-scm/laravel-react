@@ -40,10 +40,7 @@ Route::group([
 
 Route::group(['middleware' => 'auth:api'], function () {
     // Get User List
-    Route::get('users', 'Api\User\UserController@index')->name('users.index');
-
-    // Search User
-    Route::post('users/search', 'Api\User\UserController@search')->name('users.search');
+    Route::post('users/list', 'Api\User\UserController@list')->name('users.list');
 
     // Get User
     Route::get('users/{id}', 'Api\User\UserController@show')->name('users.show');
