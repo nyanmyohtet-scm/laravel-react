@@ -1,13 +1,19 @@
 import React from "react";
+import { connect } from "react-redux";
 import { Link } from "react-router-dom";
-import { Button, Nav, Navbar } from "react-bootstrap";
+import { Nav, Navbar } from "react-bootstrap";
 
-const NavBar = ({ isLoggedIn, user, handleLogout, history }) => {
-    let isAdmin = false;
+const NavBar = ({
+    isLoggedIn,
+    user,
+    isAdmin,
+    handleLogout,
+    history,
+    location
+}) => {
+    const pathName = location.pathname;
 
-    if (isLoggedIn) {
-        isAdmin = user.type == 0;
-    }
+    const isActiveLink = url => url == pathName;
 
     const handleBrand = () => history.push("/");
 
@@ -19,13 +25,13 @@ const NavBar = ({ isLoggedIn, user, handleLogout, history }) => {
             <Navbar.Collapse>
                 <Nav className="mr-auto">
                     {isAdmin && (
-                        <Nav.Item>
+                        <Nav.Item className={isActiveLink("/user") && "active"}>
                             <Link to="/user" className="nav-link">
                                 Users
                             </Link>
                         </Nav.Item>
                     )}
-                    <Nav.Item>
+                    <Nav.Item className={isActiveLink("/post") && "active"}>
                         <Link to="/post" className="nav-link">
                             Posts
                         </Link>
@@ -33,7 +39,9 @@ const NavBar = ({ isLoggedIn, user, handleLogout, history }) => {
                 </Nav>
                 {isLoggedIn && <div className="mr-3">{user.name}</div>}
                 {isLoggedIn ? (
-                    <Button onClick={e => handleLogout(e)}>Logout</Button>
+                    <a href="#" onClick={e => handleLogout(e)}>
+                        Logout
+                    </a>
                 ) : (
                     <Link to="/login">Login</Link>
                 )}
@@ -42,4 +50,10 @@ const NavBar = ({ isLoggedIn, user, handleLogout, history }) => {
     );
 };
 
-export default NavBar;
+const mapStateToProps = state => ({
+    isLoggedIn: state.auth.isLoggedIn,
+    user: state.auth.user,
+    isAdmin: state.auth.isAdmin
+});
+
+export default connect(mapStateToProps)(NavBar);
