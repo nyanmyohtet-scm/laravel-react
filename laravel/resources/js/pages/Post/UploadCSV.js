@@ -39,7 +39,6 @@ export default class UploadCSV extends Component {
             }
         })
             .then(res => {
-                console.log(res);
                 if (res.data.success) {
                     this.props.history.push("/post");
                 }

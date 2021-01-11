@@ -1,4 +1,3 @@
-// TODO: refactor into Funtional Component
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { LOGOUT } from "../actions/types";

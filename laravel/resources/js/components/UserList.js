@@ -83,7 +83,6 @@ class UserList extends Component {
 
         API.delete("users/" + id.toString(), { headers: authHeader() }).then(
             res => {
-                console.log(res);
                 if (res.data.success) {
                     this.fetchUserList();
                 }
@@ -223,7 +222,7 @@ class UserList extends Component {
                                         <td>{created_at}</td>
                                         <td>{updated_at}</td>
                                         <td>
-                                            {id != this.props.authUser.id && (
+                                            {id != this.props.user.id && (
                                                 <a
                                                     href="#"
                                                     onClick={event =>
@@ -255,6 +254,6 @@ class UserList extends Component {
     }
 }
 
-const mapStateToProps = state => ({ authUser: state.auth.user });
+const mapStateToProps = state => ({ user: state.auth.user });
 
 export default connect(mapStateToProps)(UserList);

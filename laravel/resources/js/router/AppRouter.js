@@ -7,7 +7,7 @@ import HomePage from "../pages/Home/Home";
 import Login from "../pages/Login/Login";
 import User from "../pages/User/User";
 import Profile from "../pages/User/Profile";
-import CreateUser from "../pages/User/CreateUser";
+import CreateUser from "../pages/User/Create";
 import EditUser from "../pages/User/Edit";
 import Post from "../pages/Post/Post";
 import CreatePost from "../pages/Post/Create";

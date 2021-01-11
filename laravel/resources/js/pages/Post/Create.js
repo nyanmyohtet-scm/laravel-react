@@ -20,8 +20,6 @@ export default class Create extends Component {
 
         const data = values;
 
-        this.setState({ errors: {} });
-
         API.post("posts", data, {
             headers: authHeader()
         })

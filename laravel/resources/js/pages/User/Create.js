@@ -272,7 +272,7 @@ const UserCreateForm = ({ imagePreviewUrl, handleSubmit, handleProfile }) => {
     );
 };
 
-export default class CreateUser extends Component {
+export default class Create extends Component {
     constructor(props) {
         super(props);
 
@@ -309,33 +309,18 @@ export default class CreateUser extends Component {
             })
             .catch(error => {
                 if (error.response) {
-                    // The request was made and the server responded with a status code
-                    // that falls out of the range of 2xx
                     console.log(error.response.data);
                     this.setState({
                         errors: error.response.data.errors
                     });
-                    console.log(error.response.status);
-                    console.log(error.response.headers);
-                } else if (error.request) {
-                    // The request was made but no response was received
-                    // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-                    // http.ClientRequest in node.js
-                    console.log(error.request);
-                } else {
-                    // Something happened in setting up the request that triggered an Error
-                    console.log("Error", error.message);
                 }
             });
     }
 
     handleProfile(event) {
-        this.setState(
-            {
-                selectedFile: event.target.files[0]
-            },
-            () => console.log(this.state.selectedFile)
-        );
+        this.setState({
+            selectedFile: event.target.files[0]
+        });
 
         let reader = new FileReader();
         let file = event.target.files[0];

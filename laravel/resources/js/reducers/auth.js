@@ -47,7 +47,8 @@ export default function(state = initialState, action) {
             return {
                 ...state,
                 isLoggedIn: false,
-                user: null
+                user: null,
+                isAdmin: null
             };
         default:
             return state;

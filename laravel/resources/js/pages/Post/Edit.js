@@ -35,7 +35,6 @@ export default class Edit extends Component {
             headers: authHeader()
         })
             .then(res => {
-                console.log(res);
                 const { id, title, description } = res.data.post;
                 if (this._isMounted) {
                     this.setState({
@@ -49,9 +48,6 @@ export default class Edit extends Component {
     }
 
     handleSubmit(values) {
-        console.log("handleSubmit");
-        console.log(values);
-
         const data = { id: this.state.initialValues.id, ...values };
 
         API.put("posts", data, {

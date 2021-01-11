@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { Route, Redirect } from "react-router-dom";
 import Header from "../components/Header";
 
-const PublicRoute = ({ isAuthenticated, component: Component, ...rest }) => (
+const PublicRoute = ({ isLoggedIn, component: Component, ...rest }) => (
     <Route
         {...rest}
         component={props => (
@@ -16,7 +16,7 @@ const PublicRoute = ({ isAuthenticated, component: Component, ...rest }) => (
 );
 
 const mapStateToProps = state => ({
-    isAuthenticated: state.auth.isLoggedIn
+    isLoggedIn: state.auth.isLoggedIn
 });
 
 export default connect(mapStateToProps)(PublicRoute);

@@ -5,14 +5,7 @@ import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import Error from "../../components/Error";
 import API from "../../api/api";
-import {
-    REGISTER_SUCCESS,
-    REGISTER_FAIL,
-    LOGIN_SUCCESS,
-    LOGIN_FAIL,
-    LOGOUT,
-    SET_MESSAGE
-} from "../../actions/types";
+import { LOGIN_SUCCESS } from "../../actions/types";
 
 class Login extends Component {
     constructor(props) {
@@ -65,7 +58,7 @@ class Login extends Component {
             .catch(error => {
                 if (error.response) {
                     console.error(error.response.data);
-                    if (error.response.status == 401) {
+                    if (error.response.data.errors) {
                         this.setState({
                             errors: error.response.data.errors
                         });
