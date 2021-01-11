@@ -93,6 +93,18 @@ class PostList extends Component {
         window.location.href = "http://localhost:8000/api/posts/export-csv";
     }
 
+    handleDelete(id, event) {
+        event.preventDefault();
+
+        API.delete("posts/" + id.toString(), { headers: authHeader() }).then(
+            res => {
+                if (res.data.success) {
+                    this.fetchPostList();
+                }
+            }
+        );
+    }
+
     componentDidMount() {
         this._isMounted = true;
         this.fetchPostList();
@@ -205,6 +217,7 @@ class PostList extends Component {
                             this.state.postList.map(
                                 (
                                     {
+                                        id,
                                         title,
                                         description,
                                         created_user,
@@ -231,7 +244,16 @@ class PostList extends Component {
                                         <td>{created_user.name}</td>
                                         <td>{created_at}</td>
                                         <td>Edit</td>
-                                        <td>Delete</td>
+                                        <td>
+                                            <a
+                                                href="#"
+                                                onClick={event =>
+                                                    this.handleDelete(id, event)
+                                                }
+                                            >
+                                                Delete
+                                            </a>
+                                        </td>
                                     </tr>
                                 )
                             )

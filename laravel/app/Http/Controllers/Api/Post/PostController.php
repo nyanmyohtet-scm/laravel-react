@@ -192,6 +192,8 @@ class PostController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $post = $this->postService->destory($id);
+
+        return response()->json(['success' => true, 'post' => $post]);
     }
 }

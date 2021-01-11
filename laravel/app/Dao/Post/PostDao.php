@@ -41,4 +41,18 @@ class PostDao implements PostDaoInterface
 
         return $post;
     }
+
+    /**
+     * Delete post.
+     *
+     * @param Int $id
+     * @return Illuminate\Database\Eloquent\Model $post
+     */
+    public function destory($id)
+    {
+        $post = Post::find($id);
+        $post->delete();
+
+        return $post;
+    }
 }

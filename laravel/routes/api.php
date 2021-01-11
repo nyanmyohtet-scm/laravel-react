@@ -60,6 +60,9 @@ Route::group(['middleware' => 'auth:api'], function () {
     // Create New Post
     Route::post('posts', 'Api\Post\PostController@store')->name('posts.store');
 
+    // Delete Post
+    Route::delete('posts/{id}', 'Api\Post\PostController@destroy')->name('posts.destroy');
+
     // Upload Post CSV
     Route::post('posts/upload-csv', 'Api\Post\PostController@uploadCSV')->name('posts.upload_csv');
 });

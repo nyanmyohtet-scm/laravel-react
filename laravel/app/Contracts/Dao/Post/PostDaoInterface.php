@@ -6,4 +6,5 @@ interface PostDaoInterface
 {
     public function list($param);
     public function create($param);
+    public function destory($id);
 }

@@ -45,6 +45,16 @@ class PostService implements PostServiceInterface
     }
 
     /**
+     * Delete post.
+     *
+     * @param Int $id
+     */
+    public function destory($id)
+    {
+        return $this->postDao->destory($id);
+    }
+
+    /**
      * Handle CSV Upload
      *
      * @param $csvFile
