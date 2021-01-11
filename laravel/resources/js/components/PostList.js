@@ -125,27 +125,27 @@ class PostList extends Component {
             "Action"
         ];
 
-        const { isLoggedIn, isAdmin } = this.props;
+        const { isLoggedIn } = this.props;
 
         const { loading, pagination, title } = this.state;
 
         return (
             <Fragment>
                 <div className="row mb-5">
-                    <div className="col-md-6">
+                    <div className="col-md-5">
                         <Form>
                             <Form.Row>
-                                <Col md="8">
+                                <Col md="9" className="mr-2">
                                     <Form.Control
                                         name="title"
                                         value={title}
-                                        placeholder="Title"
+                                        placeholder="Search Title"
                                         onChange={this.handleAllSearchInputs}
                                     />
                                 </Col>
                                 <Button
                                     type="submit"
-                                    className="col-md-4"
+                                    className="header-btn"
                                     onClick={this.handleSearch}
                                 >
                                     Search
@@ -153,28 +153,30 @@ class PostList extends Component {
                             </Form.Row>
                         </Form>
                     </div>
-                    {isLoggedIn && (
-                        <Link
-                            to="/post/create"
-                            className="col-md-2 btn btn-primary"
+                    <div className="col d-m-flex justify-content-around">
+                        {isLoggedIn && (
+                            <Link
+                                to="/post/create"
+                                className="btn btn-primary header-btn mr-4"
+                            >
+                                Add
+                            </Link>
+                        )}
+                        {isLoggedIn && (
+                            <Link
+                                to="/post/upload-csv"
+                                className="btn btn-primary header-btn mr-4"
+                            >
+                                Upload
+                            </Link>
+                        )}
+                        <Button
+                            className="header-btn mr-4"
+                            onClick={this.handleDownloadCSV}
                         >
-                            Add
-                        </Link>
-                    )}
-                    {isLoggedIn && (
-                        <Link
-                            to="/post/upload-csv"
-                            className="col-md-2 btn btn-primary"
-                        >
-                            Upload
-                        </Link>
-                    )}
-                    <Button
-                        className="col-md-2"
-                        onClick={this.handleDownloadCSV}
-                    >
-                        Download
-                    </Button>
+                            Download
+                        </Button>
+                    </div>
                 </div>
                 <div>
                     <Modal
@@ -291,8 +293,7 @@ class PostList extends Component {
 }
 
 const mapStateToProps = state => ({
-    isLoggedIn: state.auth.isLoggedIn,
-    isAdmin: state.auth.isAdmin
+    isLoggedIn: state.auth.isLoggedIn
 });
 
 export default connect(mapStateToProps)(PostList);
