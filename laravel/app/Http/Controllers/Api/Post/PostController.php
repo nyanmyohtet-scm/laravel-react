@@ -133,21 +133,31 @@ class PostController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store/Update resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string|max:255'
-        ]);
+        if ($request->isMethod('PUT')) {
+            $validated = $request->validate([
+                'id' => 'required|numeric|exists:App\Models\Post',
+                'title' => 'required|string|max:255',
+                'description' => 'required|string|max:255'
+            ]);
 
-        $createdPost = $this->postService->create($validated);
+            $post = $this->postService->update($validated);
+        } else {
+            $validated = $request->validate([
+                'title' => 'required|string|max:255',
+                'description' => 'required|string|max:255'
+            ]);
 
-        return response()->json(['created_post' => $createdPost]);
+            $post = $this->postService->create($validated);
+        }
+
+        return response()->json(['post' => $post]);
     }
 
     /**
@@ -158,7 +168,9 @@ class PostController extends Controller
      */
     public function show($id)
     {
-        //
+        $post = $this->postService->show($id);
+
+        return response()->json(['post' => $post]);
     }
 
     /**

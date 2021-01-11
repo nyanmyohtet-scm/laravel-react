@@ -43,6 +43,33 @@ class PostDao implements PostDaoInterface
     }
 
     /**
+     * Update post.
+     *
+     * @param  Array  $param
+     * @return Illuminate\Database\Eloquent\Model $post
+     */
+    public function update($param)
+    {
+        $post = Post::find($param['id']);
+        $post['title'] = $param['title'];
+        $post['description'] = $param['description'];
+        $post->save();
+
+        return $post;
+    }
+
+    /**
+     * Get post by id.
+     *
+     * @param Int $id
+     * @return Illuminate\Database\Eloquent\Model $post
+     */
+    public function show($id)
+    {
+        return Post::find($id);
+    }
+
+    /**
      * Delete post.
      *
      * @param Int $id

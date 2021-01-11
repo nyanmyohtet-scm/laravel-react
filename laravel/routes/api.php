@@ -60,6 +60,9 @@ Route::group(['middleware' => 'auth:api'], function () {
     // Create New Post
     Route::post('posts', 'Api\Post\PostController@store')->name('posts.store');
 
+    // Update Post
+    Route::put('posts', 'Api\Post\PostController@store')->name('posts.update');
+
     // Delete Post
     Route::delete('posts/{id}', 'Api\Post\PostController@destroy')->name('posts.destroy');
 

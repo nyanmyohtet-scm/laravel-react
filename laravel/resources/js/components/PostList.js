@@ -243,7 +243,11 @@ class PostList extends Component {
                                         <td>{description}</td>
                                         <td>{created_user.name}</td>
                                         <td>{created_at}</td>
-                                        <td>Edit</td>
+                                        <td>
+                                            <Link to={`post/edit/${id}`}>
+                                                Edit
+                                            </Link>
+                                        </td>
                                         <td>
                                             <a
                                                 href="#"
