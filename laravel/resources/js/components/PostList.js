@@ -1,4 +1,5 @@
 import React, { Component, Fragment } from "react";
+import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import { Button, Col, Form, Modal, Table } from "react-bootstrap";
 import Loading from "./Loading";
@@ -124,6 +125,8 @@ class PostList extends Component {
             "Action"
         ];
 
+        const { isLoggedIn, isAdmin } = this.props;
+
         const { loading, pagination, title } = this.state;
 
         return (
@@ -150,18 +153,22 @@ class PostList extends Component {
                             </Form.Row>
                         </Form>
                     </div>
-                    <Link
-                        to="/post/create"
-                        className="col-md-2 btn btn-primary"
-                    >
-                        Add
-                    </Link>
-                    <Link
-                        to="/post/upload-csv"
-                        className="col-md-2 btn btn-primary"
-                    >
-                        Upload
-                    </Link>
+                    {isLoggedIn && (
+                        <Link
+                            to="/post/create"
+                            className="col-md-2 btn btn-primary"
+                        >
+                            Add
+                        </Link>
+                    )}
+                    {isLoggedIn && (
+                        <Link
+                            to="/post/upload-csv"
+                            className="col-md-2 btn btn-primary"
+                        >
+                            Upload
+                        </Link>
+                    )}
                     <Button
                         className="col-md-2"
                         onClick={this.handleDownloadCSV}
@@ -244,19 +251,26 @@ class PostList extends Component {
                                         <td>{created_user.name}</td>
                                         <td>{created_at}</td>
                                         <td>
-                                            <Link to={`post/edit/${id}`}>
-                                                Edit
-                                            </Link>
+                                            {isLoggedIn && (
+                                                <Link to={`post/edit/${id}`}>
+                                                    Edit
+                                                </Link>
+                                            )}
                                         </td>
                                         <td>
-                                            <a
-                                                href="#"
-                                                onClick={event =>
-                                                    this.handleDelete(id, event)
-                                                }
-                                            >
-                                                Delete
-                                            </a>
+                                            {isLoggedIn && (
+                                                <a
+                                                    href="#"
+                                                    onClick={event =>
+                                                        this.handleDelete(
+                                                            id,
+                                                            event
+                                                        )
+                                                    }
+                                                >
+                                                    Delete
+                                                </a>
+                                            )}
                                         </td>
                                     </tr>
                                 )
@@ -276,4 +290,9 @@ class PostList extends Component {
     }
 }
 
-export default PostList;
+const mapStateToProps = state => ({
+    isLoggedIn: state.auth.isLoggedIn,
+    isAdmin: state.auth.isAdmin
+});
+
+export default connect(mapStateToProps)(PostList);

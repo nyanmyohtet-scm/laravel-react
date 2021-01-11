@@ -13,8 +13,8 @@ import {
 const user = JSON.parse(localStorage.getItem("user"));
 
 const initialState = user
-    ? { isLoggedIn: true, user }
-    : { isLoggedIn: false, user: null };
+    ? { isLoggedIn: true, user, isAdmin: user.type == 0 }
+    : { isLoggedIn: false, user: null, isAdmin: null };
 
 export default function(state = initialState, action) {
     const { type, payload } = action;
@@ -34,7 +34,8 @@ export default function(state = initialState, action) {
             return {
                 ...state,
                 isLoggedIn: true,
-                user: payload.user
+                user: payload.user,
+                isAdmin: payload.isAdmin
             };
         case LOGIN_FAIL:
             return {

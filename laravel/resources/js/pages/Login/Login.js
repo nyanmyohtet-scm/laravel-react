@@ -26,6 +26,10 @@ class Login extends Component {
     }
 
     handleSubmit({ email, password }) {
+        this.setState({
+            errors: {}
+        });
+
         const { dispatch } = this.props;
         const data = { email, password };
 
@@ -34,6 +38,7 @@ class Login extends Component {
                 const { data } = res;
                 const { token } = data.success;
                 const { user } = data;
+                const isAdmin = user.type == 0;
 
                 /** store logged in user's info to local storage */
                 localStorage.setItem(
@@ -51,7 +56,8 @@ class Login extends Component {
                         user: {
                             accessToken: token,
                             ...user
-                        }
+                        },
+                        isAdmin
                     }
                 });
             })
@@ -74,8 +80,8 @@ class Login extends Component {
         }
 
         return (
-            <div className="form-container">
-                <h1>Login Form</h1>
+            <div className="sub-container">
+                <h2>Login Form</h2>
                 <div className="mb-3">
                     <Error errors={this.state.errors} />
                 </div>

@@ -16,8 +16,7 @@ export default class Create extends Component {
     }
 
     handleSubmit(values) {
-        console.log("handleSubmit...");
-        console.log(values);
+        this.setState({ errors: {} });
 
         const data = values;
 
