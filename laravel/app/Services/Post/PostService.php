@@ -2,8 +2,8 @@
 
 namespace App\Services\Post;
 
-use App\Contracts\Services\Post\PostServiceInterface;
 use App\Contracts\Dao\Post\PostDaoInterface;
+use App\Contracts\Services\Post\PostServiceInterface;
 
 class PostService implements PostServiceInterface
 {
@@ -94,5 +94,13 @@ class PostService implements PostServiceInterface
         }
 
         return $createdPostList;
+    }
+
+    /**
+     * Export CSV of all posts.
+     */
+    public function exportCSV()
+    {
+        return $this->postDao->getAll();
     }
 }

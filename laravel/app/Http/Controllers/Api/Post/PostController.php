@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api\Post;
 
 use App\Http\Controllers\Controller;
-use App\Models\Post;
 use Illuminate\Http\Request;
 use App\Contracts\Services\Post\PostServiceInterface;
 
@@ -40,6 +39,11 @@ class PostController extends Controller
         return $this->postService->getList($param);
     }
 
+    /**
+     * Handle Post CSV upload.
+     *
+     * @param Illuminate\Http\Request $request
+     */
     public function uploadCSV(Request $request)
     {
         $validated = $request->validate([
@@ -91,7 +95,7 @@ class PostController extends Controller
     public function exportCSV(Request $request)
     {
         $fileName = 'posts.csv';
-        $posts = Post::all();
+        $posts = $this->postService->exportCSV();
 
         $headers = array(
             "Content-type"        => "text/csv",
@@ -120,16 +124,6 @@ class PostController extends Controller
         };
 
         return response()->stream($callback, 200, $headers);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
     }
 
     /**
@@ -171,29 +165,6 @@ class PostController extends Controller
         $post = $this->postService->show($id);
 
         return response()->json(['post' => $post]);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
     }
 
     /**

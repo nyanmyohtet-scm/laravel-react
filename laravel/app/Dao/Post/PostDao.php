@@ -7,6 +7,17 @@ use App\Models\Post;
 
 class PostDao implements PostDaoInterface
 {
+
+    /**
+     * Query all of posts.
+     *
+     * @return Illuminate\Database\Eloquent\Model $post
+     */
+    public function getAll()
+    {
+        return Post::all();
+    }
+
     /**
      * Query Post List.
      *

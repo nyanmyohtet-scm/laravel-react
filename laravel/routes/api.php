@@ -27,17 +27,6 @@ Route::group([
     Route::post('/register', 'AuthController@register')->name('register');
 });
 
-// Route::group(['middleware' => 'auth:api'], function () {
-//     Route::group([
-//         'prefix' => 'auth',
-//         'name' => 'auth',
-//         'namespace' => 'Auth'
-//     ], function () {
-//         Route::get('/details', 'AuthController@details')->name('details');
-//     });
-// });
-
-
 Route::group(['middleware' => 'auth:api'], function () {
     // Get User List
     Route::post('users/list', 'Api\User\UserController@list')->name('users.list');
@@ -52,7 +41,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::post('users', 'Api\User\UserController@store')->name('users.store');
 
     // Update User
-    Route::put('users', 'Api\User\UserController@store')->name('users.store');
+    Route::put('users', 'Api\User\UserController@store')->name('users.update');
 
     // Delete User
     Route::delete('users/{id}', 'Api\User\UserController@destroy')->name('users.destroy');
@@ -75,3 +64,6 @@ Route::post('posts/list', 'Api\Post\PostController@list')->name('posts.list');
 
 // Download Post List CSV
 Route::get('posts/export-csv', 'Api\Post\PostController@exportCSV')->name('posts.export_csv');
+
+// Get Post
+Route::get('posts/{id}', 'Api\Post\PostController@show')->name('posts.show');

@@ -14,4 +14,5 @@ interface PostServiceInterface
     public function show($id);
     public function destory($id);
     public function uploadCSV($dataRowList);
+    public function exportCSV();
 }
