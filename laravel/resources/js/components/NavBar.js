@@ -19,9 +19,7 @@ const NavBar = ({
 
     return (
         <Navbar bg="light" expand="lg">
-            <Navbar.Brand onClick={handleBrand}>
-                SCM Bulletin Board
-            </Navbar.Brand>
+            <Navbar.Brand onClick={handleBrand}>Laravel + ReactJS</Navbar.Brand>
             <Navbar.Collapse>
                 <Nav className="mr-auto">
                     {isAdmin && (
