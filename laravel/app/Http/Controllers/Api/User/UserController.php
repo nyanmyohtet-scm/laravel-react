@@ -6,9 +6,25 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use App\Contracts\Services\User\UserServiceInterface;
 
 class UserController extends Controller
 {
+    /**
+     * Post Service
+     */
+    private $userService;
+
+    /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct(UserServiceInterface $userService)
+    {
+        $this->userService = $userService;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -16,29 +32,25 @@ class UserController extends Controller
      */
     public function list(Request $request)
     {
-        $userList = User::query();
+        $param = [];
 
         if ($request->filled('name')) {
-            $userList = $userList->withName($request->input('name'));
+            $param['name'] = $request->input('name');
         }
 
         if ($request->filled('email')) {
-            $userList = $userList->withName($request->input('email'));
+            $param['email'] = $request->input('email');
         }
 
         if ($request->filled('created_from')) {
-            $from_date = date('Y-m-d', strtotime($request->input('created_from')));
-            $userList = $userList->withCreatedFrom($from_date);
+            $param['created_from'] = $request->input('created_from');
         }
 
         if ($request->filled('created_to')) {
-            $to_date = date('Y-m-d', strtotime($request->input('created_to')));
-            $userList = $userList->withCreatedTo($to_date);
+            $param['created_to'] = $request->input('created_to');
         }
 
-        return $userList
-            ->with('createdUser')
-            ->paginate(5);
+        return $this->userService->getList($param);
     }
 
     /**
@@ -49,11 +61,12 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
+        $isUpdate = false;
+        $param = [];
         // Update
         if ($request->isMethod('PUT')) {
-            $user = User::find($request['id']);
-
             $validated = $request->validate([
+                'id' => 'required|numeric|exists:App\Models\User',
                 'name' => 'required|string|max:255',
                 'email' => 'required|string|max:255',
                 'type' => 'required|numeric|in:0,1',
@@ -61,6 +74,7 @@ class UserController extends Controller
                 'birth_date' => 'required|string',
                 'address' => 'required|string|max:255',
             ]);
+            $isUpdate = true;
         } else { // Create
             $validated = $request->validate([
                 'name' => 'required|string|max:255',
@@ -72,8 +86,7 @@ class UserController extends Controller
                 'birth_date' => 'required|string',
                 'address' => 'required|string|max:255',
             ]);
-            $user = new User();
-            $user->password = bcrypt($validated['password']);
+            $isUpdate = false;
         }
 
         if ($request->hasFile('image')) {
@@ -83,19 +96,14 @@ class UserController extends Controller
             $fileNameToStore = $fileName . '_' . time() . '.' . $fileExt;
             $path = $request->file('image')->storeAs('images/profiles', $fileNameToStore);
         } else {
-            $fileNameToStore = "NoImage.jpg";
+            $fileNameToStore = "default.png";
         }
-        $user->profile = $fileNameToStore;
 
-        $user->name = $validated['name'];
-        $user->email = $validated['email'];
-        $user->type = $validated['type'];
-        $user->created_user_id = Auth::user()->id;
-        $user->phone = $validated['phone'];
-        $user->birth_date = $validated['birth_date'];
-        $user->address = $validated['address'];
+        $param = $validated;
+        $param['profile'] = $fileNameToStore;
 
-        if ($user->save()) {
+        $user = $this->userService->store($param, $isUpdate);
+        if ($user) {
             return response()->json(['success' => true, 'user' => $user]);
         }
     }
@@ -103,39 +111,14 @@ class UserController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param Int $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
     {
-        $user = User::find($id);
-        $b64 = '';
-        $profilePath = $user->profile;
+        $content = $this->userService->show($id);
 
-        if ($profilePath) {
-            // Load file contents into variable
-            $bin = file_get_contents(storage_path('app/images/profiles/' . $profilePath));
-
-            // Encode contents to Base64
-            $b64 = 'data:image/jpg;base64,' . base64_encode($bin);
-        }
-
-        return response()->json([
-            'user' => $user,
-            'profile_image' => $b64,
-        ]);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
+        return response()->json($content);
     }
 
     /**
@@ -146,8 +129,7 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
-        $user = User::find($id);
-        $user->delete();
+        $user = $this->userService->destory($id);
 
         return response()->json(['success' => true, 'user' => $user]);
     }
